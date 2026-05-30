@@ -31,7 +31,7 @@ android {
 
     defaultConfig {
         applicationId = "com.fitforge.fitforge"
-        minSdk = 23  // Required for flutter_secure_storage EncryptedSharedPreferences
+        minSdk = flutter.minSdkVersion  // Required for flutter_secure_storage EncryptedSharedPreferences
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
@@ -63,4 +63,12 @@ android {
 
 flutter {
     source = "../.."
+}
+
+// Rename output APK to fitforge-<version>-<buildType>.apk
+android.applicationVariants.all {
+    outputs.all {
+        val output = this as com.android.build.gradle.internal.api.BaseVariantOutputImpl
+        output.outputFileName = "fitforge-${versionName}-${buildType.name}.apk"
+    }
 }
