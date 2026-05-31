@@ -22,7 +22,7 @@ Builds:
       - flutter@stable
     prebuild:
       - $$flutter$$/bin/flutter config --no-analytics
-      - $$flutter$$/bin/flutter pub get
+      - $$flutter$$/bin/flutter pub get --enforce-lockfile
     build: $$flutter$$/bin/flutter build apk --release
 
 AutoUpdateMode: None
