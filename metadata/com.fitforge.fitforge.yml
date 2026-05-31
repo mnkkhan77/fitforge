@@ -12,38 +12,6 @@ Changelog: https://github.com/mnkkhan77/fitforge/blob/main/CHANGELOG.md
 Repo: https://github.com/mnkkhan77/fitforge
 
 AutoName: FitForge
-Summary: Offline fitness & nutrition tracker with optional AI coaching
-
-Description: |
-  FitForge is a fully offline-first fitness and nutrition tracker built for
-  Indian athletes. No account required. All data stays on your device.
-
-  **Workouts**
-  * 110+ exercises across bodyweight and equipment categories
-  * 5-day and 7-day structured training plans
-  * Live session tracker with rest timers and set tracking
-  * Haptic feedback and vibration cues
-
-  **Nutrition**
-  * Log meals from a library of common Indian foods
-  * Manual entry for custom meals
-  * Macro tracking (protein, carbs, fat) with diet plan support
-  * Daily calorie goal — resets automatically every day
-
-  **Progress**
-  * Workout streak and consistency tracking
-  * Weekly calorie burn charts
-  * Activity heatmap
-  * All data stored locally — no cloud, no tracking
-
-  **AI Coach (optional)**
-  * Context-aware coaching powered by your choice of LLM
-  * Works with Groq (free tier) or OpenAI
-  * Enter your own API key — never stored in plain text
-  * Persistent chat sessions with follow-up suggestions
-  * Completely optional — all other features work without it
-
-  No ads. No analytics. No tracking. No account. 100% open source.
 
 AntiFeatures:
   NonFreeNet:
@@ -55,8 +23,8 @@ AntiFeatures:
 Builds:
   - versionName: '2.0.0'
     versionCode: 1
-    commit: v2.0.0
-    output: build/app/outputs/flutter-apk/app-release.apk
+    commit: 376e065b101c1d14bb5d537935813d64c5019647
+    output: build/app/outputs/flutter-apk/fitforge-2.0.0-release.apk
     srclibs:
       - flutter@stable
     prebuild:

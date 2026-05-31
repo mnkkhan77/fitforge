@@ -65,10 +65,14 @@ flutter {
     source = "../.."
 }
 
-// Rename output APK to fitforge-<version>-<buildType>.apk
+// Rename output APK to fitforge-<version>[-<abi>]-<buildType>.apk
 android.applicationVariants.all {
     outputs.all {
         val output = this as com.android.build.gradle.internal.api.BaseVariantOutputImpl
-        output.outputFileName = "fitforge-${versionName}-${buildType.name}.apk"
+        val abi = output.filters.find {
+            it.filterType == com.android.build.api.variant.FilterConfiguration.FilterType.ABI.name
+        }?.identifier
+        val abiSuffix = if (abi != null) "-$abi" else ""
+        output.outputFileName = "fitforge-${versionName}${abiSuffix}-${buildType.name}.apk"
     }
 }
