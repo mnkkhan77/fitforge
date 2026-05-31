@@ -14,7 +14,7 @@ Repo: https://github.com/mnkkhan77/fitforge
 Builds:
   - versionName: 2.0.0
     versionCode: 1
-    commit: c8a6ea85d6808feb07e54ec032588db0d0430cca
+    commit: 896ffcf9b8910df1a18d7541bdea0512d5e9214e
     output: build/app/outputs/flutter-apk/app-release.apk
     srclibs:
       - flutter@stable
