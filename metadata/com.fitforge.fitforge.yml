@@ -4,24 +4,23 @@ Categories:
 License: Apache-2.0
 
 AuthorName: FitForge Contributors
-AuthorEmail: ''
 
 SourceCode: https://github.com/mnkkhan77/fitforge
 IssueTracker: https://github.com/mnkkhan77/fitforge/issues
 Changelog: https://github.com/mnkkhan77/fitforge/blob/main/CHANGELOG.md
 Repo: https://github.com/mnkkhan77/fitforge
+RepoType: git
 
 AutoName: FitForge
 
 AntiFeatures:
-  NonFreeNet:
-    en-US: >
-      The optional AI Coach feature connects to Groq or OpenAI APIs (user-provided
-      key). All other features are fully offline. The AI feature can be ignored
-      entirely — the app is complete without it.
+  - NonFreeNet
+
+CurrentVersion: 2.0.0
+CurrentVersionCode: 1
 
 Builds:
-  - versionName: '2.0.0'
+  - versionName: 2.0.0
     versionCode: 1
     commit: 39851268968bc0b7cba9d10ccaa3e22868477cf9
     output: build/app/outputs/flutter-apk/fitforge-2.0.0-release.apk
