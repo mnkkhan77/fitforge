@@ -65,6 +65,13 @@ flutter {
     source = "../.."
 }
 
+// Exclude Google Play Core from all configurations — not present in F-Droid builds
+configurations.all {
+    exclude(group = "com.google.android.play", module = "core")
+    exclude(group = "com.google.android.play", module = "core-common")
+    exclude(group = "com.google.android.play", module = "core-ktx")
+}
+
 // Rename output APK to fitforge-<version>[-<abi>]-<buildType>.apk
 android.applicationVariants.all {
     outputs.all {
