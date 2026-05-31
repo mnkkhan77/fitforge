@@ -8,16 +8,10 @@ AuthorName: FitForge Contributors
 SourceCode: https://github.com/mnkkhan77/fitforge
 IssueTracker: https://github.com/mnkkhan77/fitforge/issues
 Changelog: https://github.com/mnkkhan77/fitforge/blob/main/CHANGELOG.md
-Repo: https://github.com/mnkkhan77/fitforge
 RepoType: git
+Repo: https://github.com/mnkkhan77/fitforge
 
 AutoName: FitForge
-
-AntiFeatures:
-  - NonFreeNet
-
-CurrentVersion: 2.0.0
-CurrentVersionCode: 1
 
 Builds:
   - versionName: 2.0.0
@@ -33,3 +27,5 @@ Builds:
 
 AutoUpdateMode: None
 UpdateCheckMode: None
+CurrentVersion: 2.0.0
+CurrentVersionCode: 1
