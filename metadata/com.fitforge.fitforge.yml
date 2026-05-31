@@ -23,7 +23,7 @@ AntiFeatures:
 Builds:
   - versionName: '2.0.0'
     versionCode: 1
-    commit: 376e065b101c1d14bb5d537935813d64c5019647
+    commit: 39851268968bc0b7cba9d10ccaa3e22868477cf9
     output: build/app/outputs/flutter-apk/fitforge-2.0.0-release.apk
     srclibs:
       - flutter@stable
