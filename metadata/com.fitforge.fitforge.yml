@@ -15,7 +15,7 @@ Builds:
   - versionName: 2.0.0
     versionCode: 1
     commit: c8a6ea85d6808feb07e54ec032588db0d0430cca
-    output: build/app/outputs/flutter-apk/fitforge-2.0.0-release.apk
+    output: build/app/outputs/flutter-apk/app-release.apk
     srclibs:
       - flutter@stable
     prebuild:
