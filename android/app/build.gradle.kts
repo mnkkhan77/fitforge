@@ -17,6 +17,10 @@ if (keyPropertiesFile.exists()) {
 
 android {
     namespace = "com.fitforge.fitforge"
+    dependenciesInfo {
+        includeInApk = false
+        includeInBundle = false
+    }
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
