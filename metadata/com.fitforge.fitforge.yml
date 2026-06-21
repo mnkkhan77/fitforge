@@ -1,6 +1,8 @@
 AntiFeatures:
   NonFreeNet:
-    en-US: The optional AI coach sends your prompts to the Groq API using an API key you provide yourself. It is disabled by default and every other feature works fully offline.
+    en-US: The optional AI coach sends your prompts to the Groq API using an API key
+      you provide yourself. It is disabled by default and every other feature works
+      fully offline.
 Categories:
   - Sports & Health
 License: Apache-2.0
