@@ -1,10 +1,12 @@
 Initial release of FitForge v2.0.0
 
 • 110+ exercises across bodyweight and equipment
-• 5-day and 7-day training plans
-• Live session tracker with rest timers
-• Indian food nutrition library with macro tracking
-• 8 diet plans (muscle gain, fat loss, maintain)
+• 5-day and 7-day training plans that adapt to your fitness level
+• Live session tracker with rest timers and haptics
+• Indian food library with adjustable servings and macro tracking
+• 9 diet plans (muscle gain, fat loss, maintain — veg/non-veg/vegan)
+• Body metrics with BMR/TDEE calorie targets and weight tracking
 • Progress tracking with streaks, charts, and heatmap
-• Optional AI coach using Groq or OpenAI (user-provided key)
+• Optional daily workout reminders (local notifications)
+• Optional AI coach using Groq (user-provided key)
 • Fully offline — no account, no tracking

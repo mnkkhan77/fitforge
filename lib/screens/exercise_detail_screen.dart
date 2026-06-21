@@ -35,7 +35,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.1),
+                    color: Colors.white.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: const Row(mainAxisSize: MainAxisSize.min, children: [
@@ -69,7 +69,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
               Wrap(spacing: 6, runSpacing: 6, children: ex.muscles.map((m) => Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: indigo.withOpacity(0.2),
+                  color: indigo.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(m, style: const TextStyle(color: indigoFaint, fontSize: 12)),
@@ -94,9 +94,9 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
                     Container(
                       width: 30, height: 30,
                       decoration: BoxDecoration(
-                        color: indigo.withOpacity(0.2),
+                        color: indigo.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: indigo.withOpacity(0.4)),
+                        border: Border.all(color: indigo.withValues(alpha: 0.4)),
                       ),
                       child: Center(child: Text('${e.key + 1}', style: const TextStyle(color: indigoLight, fontWeight: FontWeight.w800, fontSize: 14))),
                     ),
@@ -112,9 +112,9 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
                     padding: const EdgeInsets.all(16),
                     margin: const EdgeInsets.only(bottom: 18),
                     decoration: BoxDecoration(
-                      color: red.withOpacity(0.1),
+                      color: red.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: red.withOpacity(0.3)),
+                      border: Border.all(color: red.withValues(alpha: 0.3)),
                     ),
                     child: const Text('⚠️ Read carefully to avoid injury',
                       style: TextStyle(color: Color(0xFFFCA5A5), fontSize: 13, fontWeight: FontWeight.w600)),
@@ -146,9 +146,9 @@ class _InfoChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.08),
+        color: Colors.white.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
       ),
       child: Column(children: [
         Text(value, style: const TextStyle(color: textPrimary, fontWeight: FontWeight.w900, fontSize: 18)),

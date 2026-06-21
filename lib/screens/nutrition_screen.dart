@@ -10,6 +10,112 @@ import '../widgets/macro_bar.dart';
 
 const _mealSections = ['Breakfast', 'Lunch', 'Snack', 'Dinner'];
 
+void _snack(BuildContext context, String msg) {
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    content: Text(msg, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+    backgroundColor: const Color(0xFF1E1B4B),
+    behavior: SnackBarBehavior.floating,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    margin: const EdgeInsets.fromLTRB(16, 0, 16, 20),
+    duration: const Duration(seconds: 2),
+  ));
+}
+
+/// Lets the user pick a serving size before logging a food (#7).
+void showAddFoodSheet(BuildContext context, Food food) {
+  double qty = 1.0;
+  showModalBottomSheet(
+    context: context,
+    backgroundColor: Colors.transparent,
+    builder: (sheetCtx) => StatefulBuilder(
+      builder: (ctx, setSheet) {
+        int scale(int v) => (v * qty).round();
+        return Container(
+          decoration: const BoxDecoration(
+            color: Color(0xFF1E293B),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            Container(width: 36, height: 4, decoration: BoxDecoration(color: surface2, borderRadius: BorderRadius.circular(2))),
+            const SizedBox(height: 16),
+            Text(food.name, style: const TextStyle(color: textPrimary, fontSize: 17, fontWeight: FontWeight.w800), textAlign: TextAlign.center),
+            const SizedBox(height: 4),
+            Text(food.source, style: const TextStyle(color: textMuted, fontSize: 12), textAlign: TextAlign.center),
+            const SizedBox(height: 20),
+            const Text('SERVINGS', style: TextStyle(color: textMuted, fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 1)),
+            const SizedBox(height: 10),
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              _QtyButton(icon: Icons.remove, onTap: () { if (qty > 0.5) setSheet(() => qty -= 0.5); }),
+              SizedBox(
+                width: 90,
+                child: Text(qty == qty.roundToDouble() ? '${qty.toInt()}' : '$qty',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: textPrimary, fontSize: 32, fontWeight: FontWeight.w900)),
+              ),
+              _QtyButton(icon: Icons.add, onTap: () { if (qty < 20) setSheet(() => qty += 0.5); }),
+            ]),
+            const SizedBox(height: 20),
+            Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
+              _CalStat('kcal', scale(food.cal), green),
+              _CalStat('Protein', scale(food.protein), indigoLight),
+              _CalStat('Carbs', scale(food.carbs), amber),
+              _CalStat('Fat', scale(food.fat), orange),
+            ]),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  final logged = Food(
+                    id: 'q${DateTime.now().millisecondsSinceEpoch}',
+                    name: qty == 1.0 ? food.name : '${food.name} ×${qty == qty.roundToDouble() ? qty.toInt() : qty}',
+                    category: food.category,
+                    cal: scale(food.cal), protein: scale(food.protein),
+                    carbs: scale(food.carbs), fat: scale(food.fat),
+                    source: food.source,
+                  );
+                  context.read<AppProvider>().addFood(logged);
+                  Navigator.pop(ctx);
+                  _snack(context, '${logged.name} added to today\'s log');
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: indigo, foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                ),
+                child: const Text('Add to Log', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15)),
+              ),
+            ),
+          ]),
+        );
+      },
+    ),
+  );
+}
+
+class _QtyButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+  const _QtyButton({required this.icon, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 48, height: 48,
+        decoration: BoxDecoration(
+          color: indigo.withValues(alpha: 0.15),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: indigo.withValues(alpha: 0.4)),
+        ),
+        child: Icon(icon, color: indigoFaint, size: 22),
+      ),
+    );
+  }
+}
+
 class NutritionScreen extends StatefulWidget {
   const NutritionScreen({super.key});
 
@@ -112,7 +218,7 @@ class _TrackerTabState extends State<_TrackerTab> {
         decoration: BoxDecoration(
           gradient: const LinearGradient(colors: [Color(0xFF134E4A), Color(0xFF0F172A)]),
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: teal.withOpacity(0.3)),
+          border: Border.all(color: teal.withValues(alpha: 0.3)),
         ),
         child: Column(children: [
           SizedBox(
@@ -223,25 +329,52 @@ class _TrackerTabState extends State<_TrackerTab> {
           if (p.todayLog.isEmpty)
             const Padding(padding: EdgeInsets.symmetric(vertical: 20),
               child: Text('No meals logged yet.', style: TextStyle(color: textMuted, fontSize: 13))),
-          ...p.todayLog.asMap().entries.map((entry) => Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: Row(children: [
-              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(entry.value.name, style: const TextStyle(color: textPrimary, fontSize: 13, fontWeight: FontWeight.w600)),
-                Text('P:${entry.value.protein}g · C:${entry.value.carbs}g · F:${entry.value.fat}g',
-                  style: const TextStyle(color: textMuted, fontSize: 11)),
-              ])),
-              Text('${entry.value.cal} kcal', style: const TextStyle(color: indigoFaint, fontWeight: FontWeight.w700, fontSize: 14)),
-              const SizedBox(width: 10),
-              GestureDetector(
-                onTap: () => context.read<AppProvider>().removeFood(entry.key),
-                child: const Text('✕', style: TextStyle(color: red, fontSize: 16)),
-              ),
-            ]),
-          )),
+          ..._buildGroupedLog(context, p),
         ]),
       ),
     ]);
+  }
+
+  /// Group today's log by meal (Breakfast → Lunch → Snack → Dinner), preserving
+  /// each item's original index so removal still targets the right entry (#7).
+  List<Widget> _buildGroupedLog(BuildContext context, AppProvider p) {
+    final widgets = <Widget>[];
+    // Stable order: known meal sections first, then anything else.
+    final order = [..._mealSections];
+    for (final f in p.todayLog) {
+      if (!order.contains(f.category)) order.add(f.category);
+    }
+    for (final section in order) {
+      final items = p.todayLog.asMap().entries.where((e) => e.value.category == section).toList();
+      if (items.isEmpty) continue;
+      final subtotal = items.fold(0, (a, e) => a + e.value.cal);
+      widgets.add(Padding(
+        padding: const EdgeInsets.only(top: 12, bottom: 2),
+        child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          Text(section.toUpperCase(), style: const TextStyle(color: indigoLight, fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 1)),
+          Text('$subtotal kcal', style: const TextStyle(color: textMuted, fontSize: 11, fontWeight: FontWeight.w600)),
+        ]),
+      ));
+      for (final entry in items) {
+        widgets.add(Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Row(children: [
+            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(entry.value.name, style: const TextStyle(color: textPrimary, fontSize: 13, fontWeight: FontWeight.w600)),
+              Text('P:${entry.value.protein}g · C:${entry.value.carbs}g · F:${entry.value.fat}g',
+                style: const TextStyle(color: textMuted, fontSize: 11)),
+            ])),
+            Text('${entry.value.cal} kcal', style: const TextStyle(color: indigoFaint, fontWeight: FontWeight.w700, fontSize: 14)),
+            const SizedBox(width: 10),
+            GestureDetector(
+              onTap: () => context.read<AppProvider>().removeFood(entry.key),
+              child: const Text('✕', style: TextStyle(color: red, fontSize: 16)),
+            ),
+          ]),
+        ));
+      }
+    }
+    return widgets;
   }
 }
 
@@ -269,6 +402,7 @@ class _SearchTab extends StatefulWidget {
 class _SearchTabState extends State<_SearchTab> {
   String _search = '';
   bool _showManual = false;
+  String _manualCat = 'Snack';
   final _nameCtrl = TextEditingController();
   final _calCtrl = TextEditingController();
   final _protCtrl = TextEditingController();
@@ -331,12 +465,14 @@ class _SearchTabState extends State<_SearchTab> {
         if (_showManual) _ManualEntry(
           nameCtrl: _nameCtrl, calCtrl: _calCtrl, protCtrl: _protCtrl,
           carbCtrl: _carbCtrl, fatCtrl: _fatCtrl,
+          category: _manualCat,
+          onCategory: (c) => setState(() => _manualCat = c),
           onAdd: () {
             if (_nameCtrl.text.isEmpty || _calCtrl.text.isEmpty) return;
             final name = _nameCtrl.text;
             final food = Food(
               id: 'm${DateTime.now().millisecondsSinceEpoch}',
-              name: name, category: 'Snack',
+              name: name, category: _manualCat,
               cal: int.tryParse(_calCtrl.text) ?? 0,
               protein: int.tryParse(_protCtrl.text) ?? 0,
               carbs: int.tryParse(_carbCtrl.text) ?? 0,
@@ -344,15 +480,7 @@ class _SearchTabState extends State<_SearchTab> {
               source: 'Manually entered',
             );
             context.read<AppProvider>().addFood(food);
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text('$name added to today\'s log',
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
-              backgroundColor: const Color(0xFF1E1B4B),
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              margin: const EdgeInsets.fromLTRB(16, 0, 16, 20),
-              duration: const Duration(seconds: 2),
-            ));
+            _snack(context, '$name added to today\'s log');
             _nameCtrl.clear(); _calCtrl.clear(); _protCtrl.clear(); _carbCtrl.clear(); _fatCtrl.clear();
             setState(() => _showManual = false);
           },
@@ -390,24 +518,13 @@ class _FoodCard extends StatelessWidget {
           Text('${food.cal} kcal', style: const TextStyle(color: indigoFaint, fontWeight: FontWeight.w800, fontSize: 13)),
           const SizedBox(height: 6),
           GestureDetector(
-            onTap: () {
-              context.read<AppProvider>().addFood(food);
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text('${food.name} added to today\'s log',
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
-                backgroundColor: const Color(0xFF1E1B4B),
-                behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                margin: const EdgeInsets.fromLTRB(16, 0, 16, 20),
-                duration: const Duration(seconds: 2),
-              ));
-            },
+            onTap: () => showAddFoodSheet(context, food),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                color: indigo.withOpacity(0.3),
+                color: indigo.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: indigo.withOpacity(0.5)),
+                border: Border.all(color: indigo.withValues(alpha: 0.5)),
               ),
               child: const Text('+ Add', style: TextStyle(color: indigoFaint, fontSize: 12, fontWeight: FontWeight.w700)),
             ),
@@ -420,15 +537,37 @@ class _FoodCard extends StatelessWidget {
 
 class _ManualEntry extends StatelessWidget {
   final TextEditingController nameCtrl, calCtrl, protCtrl, carbCtrl, fatCtrl;
+  final String category;
+  final ValueChanged<String> onCategory;
   final VoidCallback onAdd;
-  const _ManualEntry({required this.nameCtrl, required this.calCtrl, required this.protCtrl, required this.carbCtrl, required this.fatCtrl, required this.onAdd});
+  const _ManualEntry({required this.nameCtrl, required this.calCtrl, required this.protCtrl, required this.carbCtrl, required this.fatCtrl, required this.category, required this.onCategory, required this.onAdd});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(color: surface, borderRadius: BorderRadius.circular(16), border: Border.all(color: surface2)),
-      child: Column(children: [
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        const Padding(
+          padding: EdgeInsets.only(bottom: 8),
+          child: Text('MEAL', style: TextStyle(color: textMuted, fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 1)),
+        ),
+        Wrap(spacing: 6, runSpacing: 6, children: _mealSections.map((m) {
+          final active = m == category;
+          return GestureDetector(
+            onTap: () => onCategory(m),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+              decoration: BoxDecoration(
+                color: active ? indigo.withValues(alpha: 0.2) : bg,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: active ? indigo : surface2),
+              ),
+              child: Text(m, style: TextStyle(color: active ? indigoFaint : textMuted, fontSize: 12, fontWeight: FontWeight.w600)),
+            ),
+          );
+        }).toList()),
+        const SizedBox(height: 12),
         ...[
           [nameCtrl, 'Food name', TextInputType.text],
           [calCtrl, 'Calories', TextInputType.number],
@@ -528,7 +667,7 @@ class _SelectChip extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          color: active ? indigo.withOpacity(0.2) : Colors.transparent,
+          color: active ? indigo.withValues(alpha: 0.2) : Colors.transparent,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(color: active ? indigo : surface2),
         ),
@@ -563,7 +702,7 @@ class _DietPlanCard extends StatelessWidget {
           ])),
           if (isActive) Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-            decoration: BoxDecoration(color: indigo.withOpacity(0.3), borderRadius: BorderRadius.circular(20)),
+            decoration: BoxDecoration(color: indigo.withValues(alpha: 0.3), borderRadius: BorderRadius.circular(20)),
             child: const Text('Active', style: TextStyle(color: indigoFaint, fontSize: 11, fontWeight: FontWeight.w700)),
           ),
         ]),
@@ -601,7 +740,7 @@ class _DietPlanCard extends StatelessWidget {
         Container(
           margin: const EdgeInsets.symmetric(vertical: 12),
           padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(color: amber.withOpacity(0.08), borderRadius: BorderRadius.circular(12)),
+          decoration: BoxDecoration(color: amber.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(12)),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             const Text('💡 Tips', style: TextStyle(color: amber, fontSize: 12, fontWeight: FontWeight.w700)),
             const SizedBox(height: 6),
@@ -616,11 +755,11 @@ class _DietPlanCard extends StatelessWidget {
               prov.setActiveDietPlan(isActive ? null : plan);
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: isActive ? red.withOpacity(0.2) : indigo,
+              backgroundColor: isActive ? red.withValues(alpha: 0.2) : indigo,
               foregroundColor: isActive ? red : Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
-                side: isActive ? BorderSide(color: red.withOpacity(0.4)) : BorderSide.none,
+                side: isActive ? BorderSide(color: red.withValues(alpha: 0.4)) : BorderSide.none,
               ),
               padding: const EdgeInsets.symmetric(vertical: 13),
             ),

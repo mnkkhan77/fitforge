@@ -7,6 +7,10 @@
 # Keep vibration plugin
 -keep class com.tanguy.planchon.vibration.** { *; }
 
+# Keep flutter_local_notifications + its Gson models (#2 daily reminders)
+-keep class com.dexterous.** { *; }
+-dontwarn com.dexterous.**
+
 # Prevent stripping of model classes used in JSON serialisation
 -keepattributes *Annotation*
 -keepclassmembers class ** {

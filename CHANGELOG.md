@@ -4,13 +4,17 @@
 
 ### Added
 - 110+ exercises (bodyweight + equipment) from Noob to Expert level
-- 5-day and 7-day structured training plans
+- 5-day and 7-day structured training plans that adapt sets and rest to your fitness level
 - Live session tracker with per-set tracking, rest timers, and haptic feedback
 - Indian food nutrition library (dal, roti, rice, paneer, eggs, chicken and more)
+- Adjustable serving sizes and meal-grouped daily food log
 - Full macro tracking matched against active diet plan
-- 8 curated diet plans for muscle gain, fat loss, and maintenance
+- 9 curated diet plans for muscle gain, fat loss, and maintenance (veg, non-veg, vegan)
+- Body metrics (weight, height, age, activity) with Mifflin-St Jeor BMR/TDEE calorie targets
+- Weight trend tracking over time
 - Progress tracking: streak, consistency %, weekly charts, activity heatmap
-- Optional AI coach using Groq or OpenAI (user-provided key, stored encrypted)
+- Optional daily workout reminders via local notifications
+- Optional AI coach using Groq (user-provided key, stored encrypted)
 - Persistent AI chat sessions with follow-up suggestions
 - Daily food log that resets automatically at midnight
 - Editable display name in profile

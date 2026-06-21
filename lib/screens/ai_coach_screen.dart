@@ -14,17 +14,17 @@ const _secureStorage = FlutterSecureStorage(
 
 // ─── Data models ──────────────────────────────────────────────────────────────
 
-class _Msg {
+class ChatMsg {
   final String text;
   final bool isUser;
   final bool isError;
   final List<String> followups;
-  const _Msg({required this.text, required this.isUser, this.isError = false, this.followups = const []});
+  const ChatMsg({required this.text, required this.isUser, this.isError = false, this.followups = const []});
 
   Map<String, dynamic> toJson() => {
     'text': text, 'isUser': isUser, 'isError': isError, 'followups': followups,
   };
-  factory _Msg.fromJson(Map<String, dynamic> j) => _Msg(
+  factory ChatMsg.fromJson(Map<String, dynamic> j) => ChatMsg(
     text: j['text'] as String,
     isUser: j['isUser'] as bool,
     isError: (j['isError'] as bool?) ?? false,
@@ -36,7 +36,7 @@ class ChatSession {
   final String id;
   String title;
   final DateTime createdAt;
-  final List<_Msg> messages;
+  final List<ChatMsg> messages;
 
   ChatSession({required this.id, required this.title, required this.createdAt, required this.messages});
 
@@ -49,7 +49,7 @@ class ChatSession {
     id: j['id'] as String,
     title: j['title'] as String,
     createdAt: DateTime.parse(j['createdAt'] as String),
-    messages: (j['messages'] as List).map((m) => _Msg.fromJson(Map<String, dynamic>.from(m))).toList(),
+    messages: (j['messages'] as List).map((m) => ChatMsg.fromJson(Map<String, dynamic>.from(m))).toList(),
   );
 }
 
@@ -95,7 +95,7 @@ class _AiCoachScreenState extends State<AiCoachScreen> {
       ? null
       : _sessions.firstWhere((s) => s.id == _currentId, orElse: () => _sessions.last);
 
-  List<_Msg> get _msgs => _current?.messages ?? [];
+  List<ChatMsg> get _msgs => _current?.messages ?? [];
 
   // ── Lifecycle ───────────────────────────────────────────────────────────────
 
@@ -212,7 +212,7 @@ class _AiCoachScreenState extends State<AiCoachScreen> {
     _saveSessions();
   }
 
-  void _addMsg(_Msg msg) {
+  void _addMsg(ChatMsg msg) {
     final session = _current;
     if (session == null) return;
     setState(() {
@@ -304,7 +304,7 @@ The "followups" are short questions (under 8 words) the USER would want to ask Y
     if (trimmed.isEmpty || _loading) return;
 
     final p = context.read<AppProvider>();
-    _addMsg(_Msg(text: trimmed, isUser: true));
+    _addMsg(ChatMsg(text: trimmed, isUser: true));
     setState(() => _loading = true);
     _inputCtrl.clear();
     _scrollToBottom();
@@ -333,20 +333,20 @@ The "followups" are short questions (under 8 words) the USER would want to ask Y
         final body = jsonDecode(res.body);
         final choices = body['choices'] as List?;
         if (choices == null || choices.isEmpty) {
-          _addMsg(_Msg(text: '⚠️ Empty response from AI.', isUser: false, isError: true));
+          _addMsg(ChatMsg(text: '⚠️ Empty response from AI.', isUser: false, isError: true));
         } else {
           _parseAndAddReply(choices[0]['message']['content'].toString());
         }
       } else {
         String errMsg = 'API error ${res.statusCode}';
         try { errMsg = jsonDecode(res.body)['error']?['message'] ?? errMsg; } catch (_) {}
-        _addMsg(_Msg(text: '⚠️ $errMsg', isUser: false, isError: true));
+        _addMsg(ChatMsg(text: '⚠️ $errMsg', isUser: false, isError: true));
       }
     } on Exception catch (e) {
       final msg = e.toString().contains('TimeoutException')
           ? '⚠️ Request timed out. Try again.'
           : '⚠️ Could not connect. Check your internet or API key.';
-      _addMsg(_Msg(text: msg, isUser: false, isError: true));
+      _addMsg(ChatMsg(text: msg, isUser: false, isError: true));
     }
 
     setState(() => _loading = false);
@@ -358,9 +358,9 @@ The "followups" are short questions (under 8 words) the USER would want to ask Y
       final parsed = jsonDecode(_cleanJson(raw));
       final answer = (parsed['answer'] as String?)?.trim() ?? raw;
       final followups = (parsed['followups'] as List?)?.whereType<String>().toList() ?? [];
-      _addMsg(_Msg(text: answer, isUser: false, followups: followups));
+      _addMsg(ChatMsg(text: answer, isUser: false, followups: followups));
     } catch (_) {
-      _addMsg(_Msg(text: raw.trim(), isUser: false));
+      _addMsg(ChatMsg(text: raw.trim(), isUser: false));
     }
   }
 
@@ -423,8 +423,8 @@ The "followups" are short questions (under 8 words) the USER would want to ask Y
             child: Container(
               width: 32, height: 32,
               margin: const EdgeInsets.only(right: 8),
-              decoration: BoxDecoration(color: indigo.withOpacity(0.15), borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: indigo.withOpacity(0.4))),
+              decoration: BoxDecoration(color: indigo.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: indigo.withValues(alpha: 0.4))),
               child: const Icon(Icons.add, color: indigoFaint, size: 18),
             ),
           ),
@@ -562,7 +562,7 @@ The "followups" are short questions (under 8 words) the USER would want to ask Y
                     background: Container(
                       margin: const EdgeInsets.only(bottom: 8),
                       decoration: BoxDecoration(
-                        color: red.withOpacity(0.2),
+                        color: red.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(14),
                       ),
                       alignment: Alignment.centerRight,
@@ -583,15 +583,15 @@ The "followups" are short questions (under 8 words) the USER would want to ask Y
                         margin: const EdgeInsets.only(bottom: 8),
                         padding: const EdgeInsets.all(14),
                         decoration: BoxDecoration(
-                          color: isActive ? indigo.withOpacity(0.15) : surface,
+                          color: isActive ? indigo.withValues(alpha: 0.15) : surface,
                           borderRadius: BorderRadius.circular(14),
-                          border: Border.all(color: isActive ? indigo.withOpacity(0.4) : surface2),
+                          border: Border.all(color: isActive ? indigo.withValues(alpha: 0.4) : surface2),
                         ),
                         child: Row(children: [
                           Container(
                             width: 36, height: 36,
                             decoration: BoxDecoration(
-                              color: isActive ? indigo.withOpacity(0.2) : bg,
+                              color: isActive ? indigo.withValues(alpha: 0.2) : bg,
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Center(child: Text(
@@ -673,7 +673,7 @@ class _EmptyState extends StatelessWidget {
           decoration: BoxDecoration(
             gradient: const LinearGradient(colors: [Color(0xFF1E1B4B), Color(0xFF0F172A)], begin: Alignment.topLeft, end: Alignment.bottomRight),
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: indigo.withOpacity(0.3)),
+            border: Border.all(color: indigo.withValues(alpha: 0.3)),
           ),
           child: const Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text('👋 Hey, I\'m your AI Coach!', style: TextStyle(color: textPrimary, fontSize: 16, fontWeight: FontWeight.w800)),
@@ -713,7 +713,7 @@ class _EmptyState extends StatelessWidget {
 // ─── Chat bubble ──────────────────────────────────────────────────────────────
 
 class _Bubble extends StatelessWidget {
-  final _Msg msg;
+  final ChatMsg msg;
   final ValueChanged<String>? onFollowup;
   const _Bubble({required this.msg, this.onFollowup});
 
@@ -768,9 +768,9 @@ class _Bubble extends StatelessWidget {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
                     decoration: BoxDecoration(
-                      color: indigo.withOpacity(0.12),
+                      color: indigo.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: indigo.withOpacity(0.35)),
+                      border: Border.all(color: indigo.withValues(alpha: 0.35)),
                     ),
                     child: Text(q, style: const TextStyle(color: indigoFaint, fontSize: 12, fontWeight: FontWeight.w500)),
                   ),
@@ -829,7 +829,7 @@ class _TypingIndicatorState extends State<_TypingIndicator> with SingleTickerPro
           ),
           child: AnimatedBuilder(
             animation: _ctrl,
-            builder: (_, __) => Row(
+            builder: (_, _) => Row(
               mainAxisSize: MainAxisSize.min,
               children: List.generate(3, (i) {
                 final phase = ((_ctrl.value + i / 3.0) % 1.0);
@@ -837,7 +837,7 @@ class _TypingIndicatorState extends State<_TypingIndicator> with SingleTickerPro
                 return Container(
                   margin: const EdgeInsets.symmetric(horizontal: 2.5),
                   width: 7, height: 7,
-                  decoration: BoxDecoration(shape: BoxShape.circle, color: indigo.withOpacity(0.3 + 0.7 * opacity)),
+                  decoration: BoxDecoration(shape: BoxShape.circle, color: indigo.withValues(alpha: 0.3 + 0.7 * opacity)),
                 );
               }),
             ),
@@ -869,7 +869,7 @@ class _KeySetup extends StatelessWidget {
           decoration: BoxDecoration(
             gradient: const LinearGradient(colors: [Color(0xFF1E1B4B), Color(0xFF0F172A)]),
             borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: indigo.withOpacity(0.3)),
+            border: Border.all(color: indigo.withValues(alpha: 0.3)),
           ),
           child: const Column(children: [
             Text('🤖', style: TextStyle(fontSize: 56)),

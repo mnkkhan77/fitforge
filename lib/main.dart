@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'providers/app_provider.dart';
+import 'services/notification_service.dart';
 import 'theme.dart';
 import 'screens/home_screen.dart';
 import 'screens/library_screen.dart';
@@ -20,6 +21,13 @@ void main() async {
   ));
   final provider = AppProvider();
   await provider.load();
+  // Keep the daily reminder in sync with the saved preference (#2).
+  await NotificationService.init();
+  if (provider.notificationsEnabled) {
+    await NotificationService.scheduleDaily(provider.reminderHour, provider.reminderMinute);
+  } else {
+    await NotificationService.cancel();
+  }
   runApp(
     ChangeNotifierProvider.value(value: provider, child: const FitForgeApp()),
   );

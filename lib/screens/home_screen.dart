@@ -63,7 +63,7 @@ class HomeScreen extends StatelessWidget {
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(colors: [Color(0xFF134E4A), Color(0xFF0F172A)]),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: teal.withOpacity(0.3)),
+                  border: Border.all(color: teal.withValues(alpha: 0.3)),
                 ),
                 child: Column(children: [
                   Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
@@ -128,7 +128,7 @@ class HomeScreen extends StatelessWidget {
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(colors: [Color(0xFF1E1B4B), Color(0xFF312E81)]),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: indigo.withOpacity(0.3)),
+                  border: Border.all(color: indigo.withValues(alpha: 0.3)),
                 ),
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text(todayPlan!.isRest ? '😴 Rest Day' : todayPlan.label,
@@ -141,7 +141,7 @@ class HomeScreen extends StatelessWidget {
                         final ex = exercises.firstWhere((e) => e.id == id, orElse: () => exercises[0]);
                         return Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                          decoration: BoxDecoration(color: Colors.white.withOpacity(0.08), borderRadius: BorderRadius.circular(8)),
+                          decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(8)),
                           child: Text('${ex.emoji} ${ex.name}', style: const TextStyle(color: textSecondary, fontSize: 11)),
                         );
                       }),
@@ -181,9 +181,9 @@ class _StatCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.06),
+          color: Colors.white.withValues(alpha: 0.06),
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: Colors.white.withOpacity(0.08)),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
         ),
         child: Column(children: [
           Text(icon, style: const TextStyle(fontSize: 18)),

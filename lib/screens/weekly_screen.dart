@@ -5,7 +5,6 @@ import '../data/workout_plans_data.dart';
 import '../data/exercises_data.dart';
 import '../models/workout_day.dart';
 import '../theme.dart';
-import '../widgets/level_badge.dart';
 import 'session_screen.dart';
 import 'exercise_detail_screen.dart';
 
@@ -78,7 +77,7 @@ class _PlanOptionCard extends StatelessWidget {
             Text(emoji, style: const TextStyle(fontSize: 48)),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-              decoration: BoxDecoration(color: indigo.withOpacity(0.2), borderRadius: BorderRadius.circular(20)),
+              decoration: BoxDecoration(color: indigo.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(20)),
               child: Text(tag, style: const TextStyle(color: indigoFaint, fontSize: 11, fontWeight: FontWeight.w700)),
             ),
           ]),
@@ -121,7 +120,7 @@ class _WeekView extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 100),
           itemCount: plan.days.length,
           itemBuilder: (ctx, i) {
-            final day = plan.days[i] as WorkoutDay;
+            final day = plan.days[i];
             final isToday = day.day == todayName;
             final dayExs = day.exerciseIds.map((id) => exercises.firstWhere((e) => e.id == id, orElse: () => exercises[0])).toList();
             return GestureDetector(
@@ -134,7 +133,7 @@ class _WeekView extends StatelessWidget {
                   gradient: isToday ? const LinearGradient(colors: [Color(0xFF1E1B4B), Color(0xFF312E81)]) : null,
                   color: isToday ? null : surface,
                   borderRadius: BorderRadius.circular(18),
-                  border: Border.all(color: isToday ? indigo.withOpacity(0.5) : surface2),
+                  border: Border.all(color: isToday ? indigo.withValues(alpha: 0.5) : surface2),
                 ),
                 child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -150,7 +149,7 @@ class _WeekView extends StatelessWidget {
                       if (day.isRest) ...[
                         const SizedBox(width: 8),
                         Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                          decoration: BoxDecoration(color: green.withOpacity(0.15), borderRadius: BorderRadius.circular(10)),
+                          decoration: BoxDecoration(color: green.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(10)),
                           child: const Text('REST', style: TextStyle(color: green, fontSize: 10, fontWeight: FontWeight.w700))),
                       ],
                     ]),
@@ -162,7 +161,7 @@ class _WeekView extends StatelessWidget {
                       Wrap(spacing: 4, runSpacing: 4, children: [
                         ...dayExs.take(3).map((ex) => Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                          decoration: BoxDecoration(color: Colors.white.withOpacity(0.05), borderRadius: BorderRadius.circular(8)),
+                          decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.05), borderRadius: BorderRadius.circular(8)),
                           child: Text('${ex.emoji} ${ex.name}', style: const TextStyle(color: textSecondary, fontSize: 11)),
                         )),
                         if (dayExs.length > 3) Text('+${dayExs.length - 3} more', style: const TextStyle(color: textMuted, fontSize: 11)),
@@ -188,6 +187,9 @@ class _DayDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dayExs = day.exerciseIds.map((id) => exercises.firstWhere((e) => e.id == id, orElse: () => exercises[0])).toList();
+    final p = context.watch<AppProvider>();
+    final level = p.userLevel;
+    const levelNames = ['Noob', 'Beginner', 'Intermediate', 'Advanced', 'Expert'];
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(children: [
@@ -211,7 +213,7 @@ class _DayDetailScreen extends StatelessWidget {
               const SizedBox(height: 16),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                decoration: BoxDecoration(color: indigo.withOpacity(0.2), borderRadius: BorderRadius.circular(20)),
+                decoration: BoxDecoration(color: indigo.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(20)),
                 child: Text(day.day, style: const TextStyle(color: indigoFaint, fontSize: 12, fontWeight: FontWeight.w700)),
               ),
               const SizedBox(height: 10),
@@ -228,15 +230,18 @@ class _DayDetailScreen extends StatelessWidget {
                     padding: const EdgeInsets.all(14),
                     margin: const EdgeInsets.only(bottom: 18),
                     decoration: BoxDecoration(
-                      color: indigo.withOpacity(0.08),
+                      color: indigo.withValues(alpha: 0.08),
                       borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: indigo.withOpacity(0.2)),
+                      border: Border.all(color: indigo.withValues(alpha: 0.2)),
                     ),
-                    child: const Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Text('📋 Perform in this exact order', style: TextStyle(color: indigoLight, fontSize: 13, fontWeight: FontWeight.w700)),
-                      SizedBox(height: 4),
-                      Text('Cardio first warms your heart and lungs, then compound movements when you\'re peak-energy, isolation or core last.',
+                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      const Text('📋 Perform in this exact order', style: TextStyle(color: indigoLight, fontSize: 13, fontWeight: FontWeight.w700)),
+                      const SizedBox(height: 4),
+                      const Text('Cardio first warms your heart and lungs, then compound movements when you\'re peak-energy, isolation or core last.',
                         style: TextStyle(color: textMuted, fontSize: 13, height: 1.5)),
+                      const SizedBox(height: 8),
+                      Text('🎯 Adapted for ${levelNames[(level - 1).clamp(0, 4)]} — sets & rest are tuned to your level. Change it in Profile.',
+                        style: const TextStyle(color: indigoFaint, fontSize: 12, height: 1.4)),
                     ]),
                   ),
                   ...dayExs.asMap().entries.map((e) => Container(
@@ -245,7 +250,7 @@ class _DayDetailScreen extends StatelessWidget {
                     decoration: BoxDecoration(color: surface, borderRadius: BorderRadius.circular(16), border: Border.all(color: surface2)),
                     child: Row(children: [
                       Container(width: 32, height: 32,
-                        decoration: BoxDecoration(color: indigo.withOpacity(0.2), borderRadius: BorderRadius.circular(10)),
+                        decoration: BoxDecoration(color: indigo.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(10)),
                         child: Center(child: Text('${e.key + 1}', style: const TextStyle(color: indigoLight, fontWeight: FontWeight.w800, fontSize: 14)))),
                       const SizedBox(width: 10),
                       Container(width: 44, height: 44,
@@ -254,7 +259,7 @@ class _DayDetailScreen extends StatelessWidget {
                       const SizedBox(width: 12),
                       Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                         Text(e.value.name, style: const TextStyle(color: textPrimary, fontWeight: FontWeight.w700, fontSize: 14)),
-                        Text('${e.value.sets} sets × ${e.value.reps != null ? "${e.value.reps} reps" : "${e.value.duration}s"} · Rest ${e.value.restSeconds}s',
+                        Text('${adjustedSets(e.value.sets, level)} sets × ${e.value.reps != null ? "${e.value.reps} reps" : "${e.value.duration}s"} · Rest ${adjustedRest(e.value.restSeconds, level)}s',
                           style: const TextStyle(color: textMuted, fontSize: 12)),
                       ])),
                       TextButton(

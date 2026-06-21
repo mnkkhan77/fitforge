@@ -11,15 +11,15 @@ class ProgressScreen extends StatelessWidget {
     final p = context.watch<AppProvider>();
     final levelNames = ['Noob','Beginner','Intermediate','Advanced','Expert'];
     final last7 = p.history.length >= 7 ? p.history.sublist(p.history.length - 7) : p.history;
-    int _cal(Map d) => ((d['calories'] as int?) ?? 0);
-    final maxCal = last7.fold(1, (a, d) => _cal(d) > a ? _cal(d) : a);
+    int calOf(Map d) => ((d['calories'] as int?) ?? 0);
+    final maxCal = last7.fold(1, (a, d) => calOf(d) > a ? calOf(d) : a);
     // Weeks newest-first: i=0 = this week, i=1 = last week, etc.
     final histLen = p.history.length;
     final weeks = List.generate(4, (i) {
       final end = histLen - i * 7;
       if (end <= 0) return 0;
       final start = (end - 7).clamp(0, histLen);
-      return p.history.sublist(start, end).fold(0, (a, d) => a + _cal(d));
+      return p.history.sublist(start, end).fold(0, (a, d) => a + calOf(d));
     });
     const weekLabels = ['This Week', 'Last Week', '2 Wks Ago', '3 Wks Ago'];
     final maxWeek = weeks.fold(1, (a, v) => v > a ? v : a);
@@ -30,6 +30,11 @@ class ProgressScreen extends StatelessWidget {
     return ListView(padding: const EdgeInsets.fromLTRB(20, 48, 20, 100), children: [
       const Text('PROGRESS', style: TextStyle(color: textPrimary, fontSize: 22, fontWeight: FontWeight.w900, letterSpacing: 2)),
       const SizedBox(height: 20),
+
+      if (p.weightLog.isNotEmpty) ...[
+        _WeightCard(log: p.weightLog),
+        const SizedBox(height: 20),
+      ],
 
       if (p.history.isEmpty) ...[
         const SizedBox(height: 60),
@@ -50,7 +55,7 @@ class ProgressScreen extends StatelessWidget {
         decoration: BoxDecoration(
           gradient: const LinearGradient(colors: [Color(0xFF1E1B4B), Color(0xFF312E81)]),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: indigo.withOpacity(0.3)),
+          border: Border.all(color: indigo.withValues(alpha: 0.3)),
         ),
         child: Column(children: [
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
@@ -177,9 +182,13 @@ class ProgressScreen extends StatelessWidget {
             final cal = ((d['calories'] as int?) ?? 0);
             Color color;
             if (d['worked'] == true) {
-              if (cal > 300) color = indigo;
-              else if (cal > 200) color = indigoLight;
-              else color = indigoFaint;
+              if (cal > 300) {
+                color = indigo;
+              } else if (cal > 200) {
+                color = indigoLight;
+              } else {
+                color = indigoFaint;
+              }
             } else {
               color = surface;
             }
@@ -236,5 +245,66 @@ class _HeatDot extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(width: 10, height: 10,
       decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(2)));
+  }
+}
+
+// ─── Weight trend (#4) ──────────────────────────────────────────────────────────
+
+class _WeightCard extends StatelessWidget {
+  final List<Map<String, dynamic>> log;
+  const _WeightCard({required this.log});
+
+  @override
+  Widget build(BuildContext context) {
+    final entries = log.length > 12 ? log.sublist(log.length - 12) : log;
+    final weights = entries.map((e) => (e['weight'] as num).toDouble()).toList();
+    final first = (log.first['weight'] as num).toDouble();
+    final latest = (log.last['weight'] as num).toDouble();
+    final delta = latest - first;
+    final minW = weights.reduce((a, b) => a < b ? a : b);
+    final maxW = weights.reduce((a, b) => a > b ? a : b);
+    final range = (maxW - minW).abs() < 0.1 ? 1.0 : maxW - minW;
+    final deltaColor = delta == 0 ? textMuted : (delta < 0 ? green : orange);
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(color: surface, borderRadius: BorderRadius.circular(20), border: Border.all(color: surface2)),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          const Text('Weight Trend', style: TextStyle(color: textPrimary, fontSize: 14, fontWeight: FontWeight.w700)),
+          Row(children: [
+            Text('${latest.toStringAsFixed(latest % 1 == 0 ? 0 : 1)} kg',
+              style: const TextStyle(color: textPrimary, fontSize: 15, fontWeight: FontWeight.w800)),
+            const SizedBox(width: 8),
+            if (log.length > 1)
+              Text('${delta > 0 ? '+' : ''}${delta.toStringAsFixed(1)} kg',
+                style: TextStyle(color: deltaColor, fontSize: 13, fontWeight: FontWeight.w700)),
+          ]),
+        ]),
+        const SizedBox(height: 16),
+        SizedBox(
+          height: 90,
+          child: Row(crossAxisAlignment: CrossAxisAlignment.end, children: entries.map((e) {
+            final w = (e['weight'] as num).toDouble();
+            final h = 16 + ((w - minW) / range) * 60;
+            return Expanded(child: Column(mainAxisAlignment: MainAxisAlignment.end, children: [
+              Text(w.toStringAsFixed(w % 1 == 0 ? 0 : 1), style: const TextStyle(color: textMuted, fontSize: 8)),
+              const SizedBox(height: 2),
+              Container(
+                height: h,
+                margin: const EdgeInsets.symmetric(horizontal: 2),
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(colors: [teal, Color(0xFF0E7490)], begin: Alignment.topCenter, end: Alignment.bottomCenter),
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(4)),
+                ),
+              ),
+            ]));
+          }).toList()),
+        ),
+        const SizedBox(height: 8),
+        Text('Updates each time you change your weight in Profile · ${log.length} ${log.length == 1 ? 'entry' : 'entries'}',
+          style: const TextStyle(color: textMuted, fontSize: 11)),
+      ]),
+    );
   }
 }

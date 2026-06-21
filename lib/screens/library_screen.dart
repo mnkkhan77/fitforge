@@ -210,7 +210,7 @@ class _MuscleChip extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
         decoration: BoxDecoration(
-          color: active ? indigo.withOpacity(0.2) : Colors.transparent,
+          color: active ? indigo.withValues(alpha: 0.2) : Colors.transparent,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(color: active ? indigo : surface2),
         ),

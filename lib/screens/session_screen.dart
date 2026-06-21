@@ -24,6 +24,10 @@ class _SessionScreenState extends State<SessionScreen> {
   Timer? _timer;
 
   Exercise get current => widget.dayExercises[_currentIdx.clamp(0, widget.dayExercises.length - 1)];
+  // Level-adjusted targets (#5): the same plan scales to the user's level.
+  int get _level => context.read<AppProvider>().userLevel;
+  int get _sets => adjustedSets(current.sets, _level);
+  int get _rest => adjustedRest(current.restSeconds, _level);
   int get totalCalories => _completedIds.fold(0, (a, id) {
     try { return a + widget.dayExercises.firstWhere((e) => e.id == id).calories; }
     catch (_) { return a; }
@@ -40,7 +44,7 @@ class _SessionScreenState extends State<SessionScreen> {
     if (_phase == 'exercise' && current.reps == null) {
       setState(() => _timeLeft = current.duration);
     } else if (_phase == 'rest') {
-      setState(() => _timeLeft = current.restSeconds);
+      setState(() => _timeLeft = _rest);
       _startTimer();
     } else {
       setState(() => _timeLeft = null);
@@ -82,11 +86,11 @@ class _SessionScreenState extends State<SessionScreen> {
 
   void _handleComplete() {
     _timer?.cancel();
-    if (_currentSet < current.sets) {
+    if (_currentSet < _sets) {
       setState(() {
         _currentSet++;
         _phase = 'rest';
-        _timeLeft = current.restSeconds;
+        _timeLeft = _rest;
         _running = false;
       });
       _startTimer();
@@ -176,7 +180,7 @@ class _SessionScreenState extends State<SessionScreen> {
           // Rest banner
           if (_phase == 'rest')
             Container(
-              color: amber.withOpacity(0.15),
+              color: amber.withValues(alpha: 0.15),
               padding: const EdgeInsets.symmetric(vertical: 10),
               width: double.infinity,
               child: const Center(
@@ -194,7 +198,7 @@ class _SessionScreenState extends State<SessionScreen> {
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(colors: [Color(0xFF1E1B4B), Color(0xFF0F172A)]),
                   borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: indigo.withOpacity(0.2)),
+                  border: Border.all(color: indigo.withValues(alpha: 0.2)),
                 ),
                 child: Column(children: [
                   Text(current.emoji, style: const TextStyle(fontSize: 72)),
@@ -203,9 +207,9 @@ class _SessionScreenState extends State<SessionScreen> {
                     style: const TextStyle(color: textPrimary, fontSize: 24, fontWeight: FontWeight.w900, letterSpacing: 2),
                     textAlign: TextAlign.center),
                   const SizedBox(height: 6),
-                  Text('Set $_currentSet of ${current.sets}', style: const TextStyle(color: indigoLight, fontSize: 14)),
+                  Text('Set $_currentSet of $_sets', style: const TextStyle(color: indigoLight, fontSize: 14)),
                   const SizedBox(height: 12),
-                  Row(mainAxisAlignment: MainAxisAlignment.center, children: List.generate(current.sets, (i) =>
+                  Row(mainAxisAlignment: MainAxisAlignment.center, children: List.generate(_sets, (i) =>
                     Container(
                       width: 8, height: 8, margin: const EdgeInsets.symmetric(horizontal: 3),
                       decoration: BoxDecoration(
@@ -256,9 +260,9 @@ class _SessionScreenState extends State<SessionScreen> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                         decoration: BoxDecoration(
-                          color: indigo.withOpacity(0.2),
+                          color: indigo.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: indigo.withOpacity(0.4)),
+                          border: Border.all(color: indigo.withValues(alpha: 0.4)),
                         ),
                         child: Text(_running ? '⏸ Pause' : '▶ Resume',
                           style: const TextStyle(color: indigoFaint, fontSize: 13, fontWeight: FontWeight.w600)),
@@ -312,7 +316,7 @@ class _SessionScreenState extends State<SessionScreen> {
                     Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                       Text(widget.dayExercises[_currentIdx + 1].name,
                         style: const TextStyle(color: textSecondary, fontWeight: FontWeight.w600, fontSize: 14)),
-                      Text('${widget.dayExercises[_currentIdx + 1].sets} sets × ${widget.dayExercises[_currentIdx + 1].reps != null ? "${widget.dayExercises[_currentIdx + 1].reps} reps" : "${widget.dayExercises[_currentIdx + 1].duration}s"}',
+                      Text('${adjustedSets(widget.dayExercises[_currentIdx + 1].sets, _level)} sets × ${widget.dayExercises[_currentIdx + 1].reps != null ? "${widget.dayExercises[_currentIdx + 1].reps} reps" : "${widget.dayExercises[_currentIdx + 1].duration}s"}',
                         style: const TextStyle(color: textMuted, fontSize: 12)),
                     ]),
                   ]),

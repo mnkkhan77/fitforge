@@ -33,4 +33,8 @@ const List<DietPlan> dietPlans = [
     description:"Low calorie plant-based plan. Fibre-rich foods keep you full on fewer calories.",
     meals:{ "breakfast":["f10","f9"], "lunch":["f20","f16"], "snack":["f35","f30"], "dinner":["f21","f4"] },
     tips:["Lentils and legumes are your protein base","Avoid coconut milk based curries when in deficit","Eat slowly — plant foods are less satiating","Track consistently — vegan junk food exists too"]),
+  DietPlan(id:"dp9", name:"Maintain — Vegan", goal:"Maintain", pref:"Vegan", targetCal:2000, protein:90, carbs:280, fat:55,
+    description:"Balanced plant-based plan to hold your weight using everyday Indian staples.",
+    meals:{ "breakfast":["f9","f4"], "lunch":["f12","f29"], "snack":["f30","f37"], "dinner":["f21","f22"] },
+    tips:["Pair grains with legumes (dal + rice) for complete protein","Keep portions steady day to day","Peanuts, chana and sprouts cover protein without dairy","Supplement B12 — it's hard to get on a vegan diet"]),
 ];

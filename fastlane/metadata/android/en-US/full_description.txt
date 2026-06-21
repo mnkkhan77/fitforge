@@ -3,15 +3,21 @@ FitForge is a fully offline-first fitness and nutrition tracker built for Indian
 WORKOUTS
 • 110+ exercises (bodyweight + equipment) from Noob to Expert level
 • 5-day and 7-day structured training plans with rest days
+• Plans adapt to your fitness level — sets and rest scale automatically
 • Live session tracker with per-set tracking, rest timers, and haptic cues
 • Today's workout shown on the home screen based on your selected plan
 
 NUTRITION
 • Log meals from a library of common Indian foods (dal, roti, rice, paneer, eggs, chicken and more)
-• Manual entry for any custom meal
+• Adjustable serving sizes and manual entry for any custom meal
 • Full macro tracking — protein, carbs, fat — matched against your active diet plan
-• Daily calorie goal that resets automatically at midnight
-• 8 curated diet plans for muscle gain, fat loss, and maintenance (veg, non-veg, vegan)
+• Daily food log grouped by meal that resets automatically at midnight
+• 9 curated diet plans for muscle gain, fat loss, and maintenance (veg, non-veg, vegan)
+
+BODY & GOALS
+• Enter weight, height, age and activity to get a personalized calorie target
+• Mifflin-St Jeor BMR/TDEE estimate with a goal-based daily calorie suggestion
+• Weight trend tracking over time
 
 PROGRESS
 • Workout streak and total session count
@@ -23,11 +29,12 @@ PROGRESS
 PROFILE
 • Set your fitness level and goal
 • Editable display name
-• Vibration and notification toggles
+• Optional daily workout reminder at a time you choose (local notification)
+• Vibration toggle for workout haptics
 
 AI COACH (optional)
 • Context-aware coaching — the AI knows your level, goal, streak, and diet plan
-• Works with Groq (generous free tier) or OpenAI — you provide your own key
+• Uses the Groq API (generous free tier) — you provide your own key
 • API key stored securely using device encryption (Android Keystore)
 • Persistent chat sessions with follow-up question suggestions
 • The AI feature is entirely optional — every other feature works without it
@@ -36,4 +43,4 @@ PRIVACY
 • No analytics, no crash reporting, no telemetry
 • No account, no sign-up, no email required
 • All workout, nutrition, and progress data is stored only on your device
-• The only network traffic is the optional AI coach (to Groq/OpenAI with your key)
+• The only network traffic is the optional AI coach (to Groq, with your own key)
