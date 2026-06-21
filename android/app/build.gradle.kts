@@ -83,13 +83,22 @@ configurations.all {
     exclude(group = "com.google.android.play", module = "core-ktx")
 }
 
-// Rename output APK to fitforge-<version>[-<abi>]-<buildType>.apk
+// ABI-split versionCode scheme for F-Droid + rename output APK.
+// Each split APK gets versionCode = base * 10 + abiCode so F-Droid can ship
+// one APK per ABI (see metadata VercodeOperation).
+val abiCodes = mapOf("armeabi-v7a" to 1, "arm64-v8a" to 2, "x86_64" to 3)
 android.applicationVariants.all {
+    val variant = this
     outputs.all {
         val output = this as com.android.build.gradle.internal.api.BaseVariantOutputImpl
         val abi = output.filters.find {
             it.filterType == com.android.build.api.variant.FilterConfiguration.FilterType.ABI.name
         }?.identifier
+        val abiCode = abiCodes[abi]
+        if (abiCode != null) {
+            (output as com.android.build.gradle.internal.api.ApkVariantOutputImpl).versionCodeOverride =
+                variant.versionCode * 10 + abiCode
+        }
         val abiSuffix = if (abi != null) "-$abi" else ""
         output.outputFileName = "fitforge-${versionName}${abiSuffix}-${buildType.name}.apk"
     }
