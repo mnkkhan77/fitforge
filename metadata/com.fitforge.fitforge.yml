@@ -28,7 +28,7 @@ Builds:
       - $$flutter$$/bin/flutter pub get --enforce-lockfile
     build: $$flutter$$/bin/flutter build apk --release
 
-AutoUpdateMode: None
-UpdateCheckMode: None
+AutoUpdateMode: Version v%v
+UpdateCheckMode: Tags
 CurrentVersion: 2.0.0
 CurrentVersionCode: 1
