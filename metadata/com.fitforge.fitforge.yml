@@ -24,9 +24,15 @@ Builds:
     srclibs:
       - flutter@stable
     prebuild:
+      - export PUB_CACHE=$(pwd)/.pub-cache
+      - git -C $$flutter$$ checkout -f 3.44.0
       - $$flutter$$/bin/flutter config --no-analytics
       - $$flutter$$/bin/flutter pub get --enforce-lockfile
-    build: $$flutter$$/bin/flutter build apk --release --split-per-abi --target-platform="android-arm"
+    scandelete:
+      - .pub-cache
+    build:
+      - export PUB_CACHE=$(pwd)/.pub-cache
+      - $$flutter$$/bin/flutter build apk --release --split-per-abi --target-platform="android-arm"
 
   - versionName: 2.0.0
     versionCode: 12
@@ -35,9 +41,15 @@ Builds:
     srclibs:
       - flutter@stable
     prebuild:
+      - export PUB_CACHE=$(pwd)/.pub-cache
+      - git -C $$flutter$$ checkout -f 3.44.0
       - $$flutter$$/bin/flutter config --no-analytics
       - $$flutter$$/bin/flutter pub get --enforce-lockfile
-    build: $$flutter$$/bin/flutter build apk --release --split-per-abi --target-platform="android-arm64"
+    scandelete:
+      - .pub-cache
+    build:
+      - export PUB_CACHE=$(pwd)/.pub-cache
+      - $$flutter$$/bin/flutter build apk --release --split-per-abi --target-platform="android-arm64"
 
   - versionName: 2.0.0
     versionCode: 13
@@ -46,9 +58,15 @@ Builds:
     srclibs:
       - flutter@stable
     prebuild:
+      - export PUB_CACHE=$(pwd)/.pub-cache
+      - git -C $$flutter$$ checkout -f 3.44.0
       - $$flutter$$/bin/flutter config --no-analytics
       - $$flutter$$/bin/flutter pub get --enforce-lockfile
-    build: $$flutter$$/bin/flutter build apk --release --split-per-abi --target-platform="android-x64"
+    scandelete:
+      - .pub-cache
+    build:
+      - export PUB_CACHE=$(pwd)/.pub-cache
+      - $$flutter$$/bin/flutter build apk --release --split-per-abi --target-platform="android-x64"
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags ^v([\d.]+)$
